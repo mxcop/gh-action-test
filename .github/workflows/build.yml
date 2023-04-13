@@ -34,7 +34,7 @@ jobs:
       - name: install pnpm dependencies
         run: pnpm i --frozen-lockfile
       - name: build the tauri app
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@dev
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
