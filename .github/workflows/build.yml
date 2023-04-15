@@ -56,7 +56,9 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target
+            ~/src-tauri/.cargo/registry
+            ~/src-tauri/.cargo/git
+            src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: install rust toolchain
