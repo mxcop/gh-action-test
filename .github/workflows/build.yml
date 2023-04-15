@@ -7,6 +7,11 @@ on:
         default: 'v0.0.0'
         required: true
         type: string
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - v1.**
 
 jobs:
   publish-tauri:
@@ -20,19 +25,53 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
+
+      # Install & Setup [pnpm]
       - name: install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8.2.0
-      - name: install rust stable
-        uses: dtolnay/rust-toolchain@stable
+          run_install: false
+      - name: get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        name: setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: install pnpm dependencies
+        run: pnpm i --frozen-lockfile
+      
+      # Install & Setup [rust]
+      # - name: install rust stable
+      #   uses: dtolnay/rust-toolchain@stable
+      - name: setup cargo cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      # Install [tauri] dependencies
       - name: install tauri dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
-      - name: install pnpm dependencies
-        run: pnpm i --frozen-lockfile
+      
+      # Build the app using [tauri]
       - name: build the tauri app
         uses: tauri-apps/tauri-action@dev
         env:
@@ -40,7 +79,7 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: app-${{ inputs.version }} # the action automatically replaces \_\_VERSION\_\_ with the app version
+          tagName: app-${{ inputs.version }}
           releaseName: 'App ${{ inputs.version }}'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
