@@ -8,9 +8,6 @@ on:
         required: true
         type: string
 
-env:
-  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-
 jobs:
   publish-tauri:
     permissions:
@@ -39,6 +36,8 @@ jobs:
       - name: build the tauri app
         uses: tauri-apps/tauri-action@dev
         env:
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: app-${{ inputs.version }} # the action automatically replaces \_\_VERSION\_\_ with the app version
