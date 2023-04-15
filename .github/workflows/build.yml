@@ -48,8 +48,6 @@ jobs:
         run: pnpm i --frozen-lockfile
       
       # Install & Setup [rust]
-      # - name: install rust stable
-      #   uses: dtolnay/rust-toolchain@stable
       - name: setup cargo cache
         uses: actions/cache@v3
         with:
