@@ -74,6 +74,16 @@ jobs:
         uses: cycjimmy/semantic-release-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branches: |
+          [
+            '+([0-9])?(.{+([0-9]),x}).x',
+            'main',
+            'next',
+            'next-major',
+            {name: 'beta', prerelease: true},
+            {name: 'alpha', prerelease: true}
+          ]
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
