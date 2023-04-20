@@ -71,19 +71,8 @@ jobs:
       
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
-        uses: cycjimmy/semantic-release-action@v3
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          branches: |
-          [
-            '+([0-9])?(.{+([0-9]),x}).x',
-            'main',
-            'next',
-            'next-major',
-            {name: 'beta', prerelease: true},
-            {name: 'alpha', prerelease: true}
-          ]
+        id: semlog
+        uses: mikepenz/release-changelog-builder-action@{latest-release}
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
@@ -95,7 +84,7 @@ jobs:
         with:
           tagName: ${{ inputs.version }}
           releaseName: 'Emberry ${{ inputs.version }}'
-          releaseBody: '### Changelog\n${{ steps.semantic.outputs.new_release_notes }}\n\nHappy chatting! *- Emberry DevTeam 😋*'
+          releaseBody: '### Changelog\n${{ steps.semlog.outputs.changelog }}\n\nHappy chatting! *- Emberry DevTeam 😋*'
           releaseDraft: true
           includeUpdaterJson: true
           prerelease: false
