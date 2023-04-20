@@ -24,6 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
       # Install & Setup [pnpm]
       - name: install pnpm
         uses: pnpm/action-setup@v2
@@ -73,6 +76,8 @@ jobs:
       - name: 📟 Semantic Changelog
         id: semlog
         uses: mikepenz/release-changelog-builder-action@v3.7.1
+        with:
+          commitMode: true
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
@@ -82,8 +87,8 @@ jobs:
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ inputs.version }}
-          releaseName: 'Emberry ${{ inputs.version }}'
+          tagName: ${{ env.RELEASE_VERSION }}
+          releaseName: 'Emberry ${{ env.RELEASE_VERSION }}'
           releaseBody: '### Changelog\n${{ steps.semlog.outputs.changelog }}\n\nHappy chatting! *- Emberry DevTeam 😋*'
           releaseDraft: true
           includeUpdaterJson: true
