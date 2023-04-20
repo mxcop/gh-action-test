@@ -72,7 +72,7 @@ jobs:
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
         id: semlog
-        uses: mikepenz/release-changelog-builder-action@{latest-release}
+        uses: mikepenz/release-changelog-builder-action@v3.7.1
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
