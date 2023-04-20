@@ -73,6 +73,8 @@ jobs:
       - name: 📟 Semantic Changelog
         id: semlog
         uses: mikepenz/release-changelog-builder-action@v3.7.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           commitMode: true
 
@@ -86,7 +88,10 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Emberry ${{ github.ref_name }}'
-          releaseBody: '### Changelog\n${{ steps.semlog.outputs.changelog }}\n\nHappy chatting! *- Emberry DevTeam 😋*'
+          releaseBody: |
+            '### Changelog 📜
+             ${{ steps.semlog.outputs.changelog }}
+             <br>Happy chatting! *- Emberry DevTeam 😋*'
           releaseDraft: true
           includeUpdaterJson: true
           prerelease: false
