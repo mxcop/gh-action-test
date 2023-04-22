@@ -31,7 +31,7 @@ jobs:
       - name: 💾 Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: 📦️ Rust cache
+      - name: 📦️ Cargo Cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
