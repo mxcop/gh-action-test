@@ -1,12 +1,5 @@
 name: 'build & publish'
 on:
-  # workflow_dispatch:
-  #   inputs:
-  #     version:
-  #       description: 'The version of this build'
-  #       default: 'v0.0.0'
-  #       required: true
-  #       type: string
   push:
     tags:
       - v**
