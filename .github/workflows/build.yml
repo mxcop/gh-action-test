@@ -18,25 +18,30 @@ jobs:
       - uses: actions/checkout@v3
 
       # Install & Setup [pnpm]
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
+      # - name: install pnpm
+      #   uses: pnpm/action-setup@v2
+      #   with:
+      #     version: 8.2.0
+      #     run_install: false
+      # - name: get pnpm store directory
+      #   id: pnpm-cache
+      #   shell: bash
+      #   run: |
+      #     echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      # - uses: actions/cache@v3
+      #   name: setup pnpm cache
+      #   with:
+      #     path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-store-
+      # - name: install pnpm dependencies
+      #   run: pnpm i --frozen-lockfile
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
         with:
-          version: 8.2.0
-          run_install: false
-      - name: get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        name: setup pnpm cache
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: install pnpm dependencies
-        run: pnpm i --frozen-lockfile
+          node-version: 'lts/*'
+          cache: 'pnpm' # Set this to npm, yarn or pnpm.
       
       # Install & Setup [rust]
       # - name: setup cargo cache
@@ -54,13 +59,10 @@ jobs:
           profile: minimal
           toolchain: stable
 
-      - uses: actions/cache@v3
-        name: setup cargo cache
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
         with:
-          path: ~/src-tauri/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
+          workspaces: './src-tauri -> target'
 
       # - name: Setup Cargo Cache
       #   uses: Swatinem/rust-cache@v2
@@ -70,11 +72,12 @@ jobs:
       #     key: ${{ runner.os }}
 
       # Install [tauri] dependencies
-      - name: Install tauri dependencies (ubuntu only)
+      - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
+        # We can remove libayatana-appindicator3-dev if you don't use the system tray feature.
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
       
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
