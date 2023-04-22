@@ -52,7 +52,7 @@ jobs:
           toolchain: stable
 
       # Install [tauri] dependencies
-      - name: install tauri dependencies (ubuntu only)
+      - name: Install tauri dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
