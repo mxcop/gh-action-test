@@ -43,17 +43,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ~/src-tauri/.cargo/registry
-            ~/src-tauri/.cargo/git
-            ./src-tauri/target
-            ~/src-tauri/target
-            src-tauri/target
-            ~/src-tauri
-            ./src-tauri
-            src-tauri
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+            **/src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/src-tauri/Cargo.lock') }}
 
       - name: install rust toolchain
         uses: actions-rs/toolchain@v1
