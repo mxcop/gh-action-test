@@ -78,6 +78,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.ref_name }}
+          writeToFile: false
+          useGitmojis: false
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
@@ -90,7 +92,7 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'Emberry ${{ github.ref_name }}'
           releaseBody: |
-            ### Changelog 📜
+            ## Changelog 📜
             ${{ steps.changelog.outputs.changes }}
             <br>Happy chatting! *- Emberry DevTeam 😋*
           releaseDraft: true
