@@ -54,11 +54,20 @@ jobs:
           profile: minimal
           toolchain: stable
 
-      - name: Setup Cargo Cache
-        uses: Swatinem/rust-cache@v2
+      - uses: actions/cache@v3
+        name: setup cargo cache
         with:
-          workspaces: src-tauri
-          key: ${{ runner.os }}
+          path: src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      # - name: Setup Cargo Cache
+      #   uses: Swatinem/rust-cache@v2
+      #   with:
+      #     workspaces: |
+      #       src-tauri
+      #     key: ${{ runner.os }}
 
       # Install [tauri] dependencies
       - name: Install tauri dependencies (ubuntu only)
