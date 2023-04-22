@@ -48,7 +48,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      - name: install rust toolchain
+      - name: Install rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
