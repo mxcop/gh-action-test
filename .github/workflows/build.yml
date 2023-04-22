@@ -51,6 +51,7 @@ jobs:
 
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
+        continue-on-error: true
         id: changelog
         uses: requarks/changelog-action@v1
         with:
