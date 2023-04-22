@@ -57,6 +57,9 @@ jobs:
             ./src-tauri/target
             ~/src-tauri/target
             src-tauri/target
+            ~/src-tauri
+            ./src-tauri
+            src-tauri
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: install rust toolchain
