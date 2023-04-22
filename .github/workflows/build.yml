@@ -1,86 +1,55 @@
-name: 'build & publish'
+name: Release
 on:
   push:
     tags:
-      - v**
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
-  publish-tauri:
+  release:
     permissions:
       contents: write
     strategy:
       fail-fast: false
       matrix:
         platform: [macos-latest, ubuntu-20.04, windows-latest]
-
     runs-on: ${{ matrix.platform }}
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Install & Setup [pnpm]
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.2.0
-          run_install: false
-      # - name: get pnpm store directory
-      #   id: pnpm-cache
-      #   shell: bash
-      #   run: |
-      #     echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      # - uses: actions/cache@v3
-      #   name: setup pnpm cache
-      #   with:
-      #     path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pnpm-store-
-      
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-          cache: 'pnpm' # Set this to npm, yarn or pnpm.
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-20.04'
+        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: install pnpm dependencies
-        run: pnpm i --frozen-lockfile
-      
-      # Install & Setup [rust]
-      # - name: setup cargo cache
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: src-tauri/target
-      #      # Add date to the cache to keep it up to date
-      #     key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-cargo- 
-
-      - name: Install rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
 
-      # - name: Setup Cargo Cache
-      #   uses: Swatinem/rust-cache@v2
-      #   with:
-      #     workspaces: |
-      #       src-tauri
-      #     key: ${{ runner.os }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.2.0
+          run_install: false
 
-      # Install [tauri] dependencies
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
-        # We can remove libayatana-appindicator3-dev if you don't use the system tray feature.
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
-      
+      - name: Sync node version and setup cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm' # Set this to npm, yarn or pnpm.
+
+      - name: Install frontend dependencies
+        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        run: pnpm i --frozen-lockfile # Change this to npm, yarn or pnpm.
+
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
         id: changelog
