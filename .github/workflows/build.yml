@@ -54,6 +54,8 @@ jobs:
             ~/.cargo/git
             ~/src-tauri/.cargo/registry
             ~/src-tauri/.cargo/git
+            ./src-tauri/target
+            ~/src-tauri/target
             src-tauri/target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
@@ -71,12 +73,11 @@ jobs:
       
       # Generate a changelog using the commit history
       - name: 📟 Semantic Changelog
-        id: semlog
-        uses: mikepenz/release-changelog-builder-action@v3.7.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        id: changelog
+        uses: requarks/changelog-action@v1
         with:
-          commitMode: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ github.ref_name }}
 
       # Build the app using [tauri]
       - name: 📦️ Build the Tauri App
@@ -89,9 +90,9 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'Emberry ${{ github.ref_name }}'
           releaseBody: |
-            '### Changelog 📜
-             ${{ steps.semlog.outputs.changelog }}
-             <br>Happy chatting! *- Emberry DevTeam 😋*'
+            ### Changelog 📜
+            ${{ steps.changelog.outputs.changes }}
+            <br>Happy chatting! *- Emberry DevTeam 😋*
           releaseDraft: true
           includeUpdaterJson: true
           prerelease: false
