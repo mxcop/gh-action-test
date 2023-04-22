@@ -46,7 +46,7 @@ jobs:
       #      # Add date to the cache to keep it up to date
       #     key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
       #     restore-keys: |
-      #       ${{ runner.os }}-cargo-
+      #       ${{ runner.os }}-cargo- 
 
       - name: Install rust toolchain
         uses: actions-rs/toolchain@v1
